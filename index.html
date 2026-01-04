@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Discord Status</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #222A46, #352841, #47263D, #5A2438);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Shooting Stars Background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.8);
+            animation: shoot linear;
+        }
+
+        .particle::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.8), transparent);
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translate(0, 0) rotate(-45deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-1000px, 1000px) rotate(-45deg);
+                opacity: 0;
+            }
+        }
+
+        /* Static Stars Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Nebula Effect */
+        .nebula {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.3;
+        }
+
+        .nebula-cloud {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: float-nebula 20s ease-in-out infinite;
+        }
+
+        @keyframes float-nebula {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, -50px) scale(1.2); }
+        }
+
+        /* Floating Aurora Lights */
+        .aurora {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        .aurora-light {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: aurora-float 15s ease-in-out infinite;
+        }
+
+        @keyframes aurora-float {
+            0%, 100% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 0.3;
+            }
+            33% { 
+                transform: translate(100px, -100px) scale(1.2);
+                opacity: 0.5;
+            }
+            66% { 
+                transform: translate(-100px, 100px) scale(0.9);
+                opacity: 0.4;
+            }
+        }
+
+        /* Floating Particles (Glowing Orbs) */
+        .floating-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+            animation: float-orb linear infinite;
+            filter: blur(2px);
+        }
+
+        @keyframes float-orb {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Shimmer Overlay */
+        .shimmer {
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 40%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 60%,
+                transparent 100%
+            );
+            animation: shimmer 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                transform: translateX(-100%) translateY(-100%) rotate(30deg);
+            }
+            50% {
+                transform: translateX(100%) translateY(100%) rotate(30deg);
+            }
+        }
+
+        /* Wave Motion for Card */
+        .card {
+            background: rgba(20, 20, 40, 0.75);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 30px;
+            padding: 25px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 
+                0 0 40px rgba(79, 172, 254, 0.2),
+                0 0 80px rgba(240, 147, 251, 0.1),
+                0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+            animation: gentle-float 6s ease-in-out infinite;
+        }
+
+        @keyframes gentle-float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card::-webkit-scrollbar-track {
+            background: rgba(20, 20, 40, 0.3);
+            border-radius: 10px;
+        }
+
+        .card::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #4facfe, #f093fb);
+            border-radius: 10px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4facfe, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            border-radius: 30px;
+            z-index: -1;
+            animation: gradient 8s ease infinite;
+            opacity: 0.5;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 18px;
+            background: linear-gradient(135deg, rgba(20, 25, 45, 0.5), rgba(40, 30, 50, 0.5));
+            border-radius: 20px;
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 45%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 55%,
+                transparent 100%
+            );
+            animation: widget-shimmer 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid #4facfe;
+            box-shadow: 0 0 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 40%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 5px solid white;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            width: 70px;
+            height: 70px;
+        }
+
+        .online { background: #43b581; }
+        .idle { background: #faa61a; }
+        .dnd { background: #f04747; }
+        .offline { background: #747f8d; }
+
+        .username {
+            font-size: 26px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #4facfe, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .activity-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(20, 25, 45, 0.5), rgba(40, 30, 50, 0.5));
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 45%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 55%,
+                transparent 100%
+            );
+            animation: widget-shimmer 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .activity-section:hover {
+            border-color: rgba(240, 147, 251, 0.5);
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .spotify-player {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .album-cover {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+        }
+
+        .song-info {
+            flex: 1;
+        }
+
+        .song-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .artist-name {
+            color: #161414;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* PROGRESS BAR STYLES */
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s linear;
+        }
+
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.9;
+            color: #fff;
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #43b581;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .connection-status {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        .widget-section {
+            margin-top: 12px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(20, 25, 45, 0.5), rgba(40, 30, 50, 0.5));
+            border: 1px solid rgba(79, 172, 254, 0.2);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .widget-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                120deg,
+                transparent 0%,
+                transparent 45%,
+                rgba(255, 255, 255, 0.05) 50%,
+                transparent 55%,
+                transparent 100%
+            );
+            animation: widget-shimmer 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes widget-shimmer {
+            0%, 100% {
+                transform: translateX(-100%) rotate(30deg);
+            }
+            50% {
+                transform: translateX(100%) rotate(30deg);
+            }
+        }
+
+        .widget-section:hover {
+            border-color: rgba(79, 172, 254, 0.5);
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .widget-title {
+            font-size: 12px;
+            margin-bottom: 6px;
+            text-align: center;
+            font-weight: bold;
+            color: #4facfe;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .widget-content {
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #ffffff;
+        }
+
+        /* Grid Layouts */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .mini-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .widget-compact {
+            padding: 10px;
+        }
+
+        .widget-button {
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .widget-button:hover {
+            background: linear-gradient(135deg, #764ba2, #f093fb);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.5);
+        }
+
+        .widgets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .widget-small {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        #achievement {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: #FFD700;
+            color: black;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: right 0.5s;
+            z-index: 10000;
+        }
+
+        #achievement h3 {
+            margin: 0;
+        }
+
+        #achievement p {
+            margin: 10px 0 0 0;
+        }
+
+        @media (max-width: 900px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mini-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Aurora Lights -->
+    <div class="aurora" id="aurora"></div>
+    
+    <!-- Floating Orbs -->
+    <div class="floating-orbs" id="floating-orbs"></div>
+    
+    <!-- Nebula clouds background -->
+    <div class="nebula" id="nebula"></div>
+    
+    <!-- Static twinkling stars -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- Shooting stars -->
+    <div class="particles" id="particles"></div>
+
+    <div class="card">
+        <div class="shimmer"></div>
+        <div id="status-content">
+            <div class="connection-status">Connecting to Discord...</div>
+        </div>
+
+        <!-- Main Grid Layout -->
+        <div class="main-grid">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Clock Widget (Large) -->
+                <div class="widget-section">
+                    <div class="widget-title">🕐 Local Time (Phoenix)</div>
+                    <div id="clock" style="font-size: 36px; font-weight: bold; text-align: center; color: #f093fb; text-shadow: 0 0 20px rgba(240, 147, 251, 0.6);"></div>
+                </div>
+
+                <!-- Quote of the Day -->
+                <div class="widget-section">
+                    <div class="widget-title">💭 Quote of the Day</div>
+                    <div id="quote" class="widget-content" style="font-style: italic; font-size: 12px;"></div>
+                </div>
+
+                <!-- Crypto Prices -->
+                <div class="widget-section">
+                    <div class="widget-title">💰 Crypto Prices</div>
+                    <div id="crypto-prices" class="widget-content" style="font-size: 11px;"></div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Mini Grid: Visitor & Live Status -->
+                <div class="mini-grid">
+                    <div class="widget-section widget-compact">
+                        <div class="widget-title">👀 Visits</div>
+                        <div id="visitor-count" style="font-size: 28px; font-weight: bold; text-align: center; color: #4facfe; text-shadow: 0 0 20px rgba(79, 172, 254, 0.6);"></div>
+                    </div>
+                    
+                    <div class="widget-section widget-compact" style="display: flex; align-items: center; justify-content: center;">
+                        <span class="live-indicator"></span> 
+                        <span style="color: #4facfe; font-weight: bold; font-size: 16px; text-shadow: 0 0 10px rgba(79, 172, 254, 0.5); margin-left: 8px;">Live</span>
+                    </div>
+                </div>
+
+                <!-- Random Fact -->
+                <div class="widget-section">
+                    <div class="widget-title">🎲 Random Fact</div>
+                    <div id="random-fact" class="widget-content" style="font-size: 11px; line-height: 1.3;"></div>
+                    <button onclick="loadRandomFact()" class="widget-button" style="margin-top: 8px; font-size: 11px; padding: 6px;">Get New Fact</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="achievement">
+        <h3>🏆 Achievement Unlocked!</h3>
+        <p id="achievementText"></p>
+    </div>
+
+    <script>
+        const USER_ID = '1102391061814448218';
+        let ws;
+        let heartbeatInterval;
+        let spotifyData = null;
+        let progressInterval = null;
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgressBar() {
+            if (!spotifyData) return;
+
+            const now = Date.now();
+            const start = spotifyData.timestamps.start;
+            const end = spotifyData.timestamps.end;
+            const duration = end - start;
+            const elapsed = now - start;
+
+            const progress = Math.min((elapsed / duration) * 100, 100);
+
+            const progressFill = document.getElementById('progressFill');
+            const currentTime = document.getElementById('currentTime');
+            
+            if (progressFill) {
+                progressFill.style.width = progress + '%';
+            }
+            
+            if (currentTime) {
+                currentTime.textContent = formatTime(elapsed);
+            }
+
+            if (progress >= 100 && progressInterval) {
+                clearInterval(progressInterval);
+            }
+        }
+
+        function connectWebSocket() {
+            ws = new WebSocket('wss://api.lanyard.rest/socket');
+
+            ws.onopen = () => {
+                console.log('Connected to Lanyard');
+            };
+
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+
+                if (data.op === 1) {
+                    const heartbeatInterval_ms = data.d.heartbeat_interval;
+                    
+                    ws.send(JSON.stringify({
+                        op: 2,
+                        d: {
+                            subscribe_to_id: USER_ID
+                        }
+                    }));
+
+                    heartbeatInterval = setInterval(() => {
+                        ws.send(JSON.stringify({ op: 3 }));
+                    }, heartbeatInterval_ms);
+                }
+
+                if (data.t === 'INIT_STATE' || data.t === 'PRESENCE_UPDATE') {
+                    displayStatus(data.d);
+                }
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                clearInterval(heartbeatInterval);
+                setTimeout(connectWebSocket, 3000);
+            };
+        }
+
+        function displayStatus(data) {
+            const status = data.discord_status;
+            const user = data.discord_user;
+            const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+
+            let html = `
+                <div class="header">
+                    <div class="avatar-wrapper">
+                        <img src="${avatarUrl}" alt="Avatar" class="avatar">
+                        <span class="status-dot ${status}"></span>
+                    </div>
+                    <div>
+                        <div class="username">${user.username}</div>
+                        <div style="color: #666; text-transform: capitalize;">${status}</div>
+                    </div>
+                </div>
+            `;
+
+            if (data.spotify) {
+                spotifyData = data.spotify;
+                const duration = spotifyData.timestamps.end - spotifyData.timestamps.start;
+                
+                html += `
+                    <div class="activity-section">
+                        <div style="font-weight: bold; margin-bottom: 10px; color: #1DB954;">
+                            🎵 Listening to Spotify
+                        </div>
+                        <div class="spotify-player">
+                            <img src="${data.spotify.album_art_url}" class="album-cover" alt="Album">
+                            <div class="song-info">
+                                <div class="song-title">${data.spotify.song}</div>
+                                <div class="artist-name">${data.spotify.artist}</div>
+                                <div class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="progressFill"></div>
+                                    </div>
+                                    <div class="time-stamps">
+                                        <span id="currentTime">0:00</span>
+                                        <span id="totalTime">${formatTime(duration)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                }
+
+                setTimeout(() => {
+                    updateProgressBar();
+                    progressInterval = setInterval(updateProgressBar, 500);
+                }, 100);
+
+            } else {
+                spotifyData = null;
+                if (progressInterval) {
+                    clearInterval(progressInterval);
+                    progressInterval = null;
+                }
+            }
+
+            const game = data.activities.find(a => a.type === 0);
+            if (game) {
+                html += `
+                    <div class="activity-section">
+                        <div style="font-weight: bold; color: #5865F2;">
+                            🎮 Playing ${game.name}
+                        </div>
+                    </div>
+                `;
+            }
+
+            const customStatus = data.activities.find(a => a.type === 4);
+            if (customStatus && customStatus.state) {
+                html += `
+                    <div class="activity-section">
+                        <div style="font-weight: bold; margin-bottom: 5px;">💭 Status</div>
+                        <div>${customStatus.emoji ? customStatus.emoji.name + ' ' : ''}${customStatus.state}</div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('status-content').innerHTML = html;
+        }
+
+        // Clock Widget
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                timeZone: 'America/Phoenix'
+            };
+            document.getElementById('clock').textContent = now.toLocaleTimeString('en-US', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+
+
+        // Visitor Counter
+        let visits = localStorage.getItem('pageVisits') || 0;
+        visits++;
+        localStorage.setItem('pageVisits', visits);
+        document.getElementById('visitor-count').textContent = visits;
+
+        // Crypto Prices
+        function loadCryptoPrices() {
+            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,solana&vs_currencies=usd&include_24hr_change=true')
+                .then(res => res.json())
+                .then(data => {
+                    const btcChange = data.bitcoin.usd_24h_change > 0 ? '📈' : '📉';
+                    const ethChange = data.ethereum.usd_24h_change > 0 ? '📈' : '📉';
+                    const ltcChange = data.litecoin.usd_24h_change > 0 ? '📈' : '📉';
+                    const solChange = data.solana.usd_24h_change > 0 ? '📈' : '📉';
+                    
+                    document.getElementById('crypto-prices').innerHTML = `
+                        <div style="margin-bottom: 8px;">
+                            ${btcChange} <strong>BTC:</strong> ${data.bitcoin.usd.toLocaleString()} 
+                            <span style="font-size: 12px; opacity: 0.8;">(${data.bitcoin.usd_24h_change.toFixed(1)}%)</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            ${ethChange} <strong>ETH:</strong> ${data.ethereum.usd.toLocaleString()} 
+                            <span style="font-size: 12px; opacity: 0.8;">(${data.ethereum.usd_24h_change.toFixed(1)}%)</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            ${ltcChange} <strong>LTC:</strong> ${data.litecoin.usd.toLocaleString()} 
+                            <span style="font-size: 12px; opacity: 0.8;">(${data.litecoin.usd_24h_change.toFixed(1)}%)</span>
+                        </div>
+                        <div>
+                            ${solChange} <strong>SOL:</strong> ${data.solana.usd.toLocaleString()} 
+                            <span style="font-size: 12px; opacity: 0.8;">(${data.solana.usd_24h_change.toFixed(1)}%)</span>
+                        </div>
+                    `;
+                })
+                .catch(() => {
+                    document.getElementById('crypto-prices').textContent = 'Loading prices...';
+                });
+        }
+
+        loadCryptoPrices();
+        setInterval(loadCryptoPrices, 60000); // Update every minute
+
+        // Quote of the Day (Using Quotable API)
+        function loadQuote() {
+            fetch('https://api.quotable.io/random?maxLength=150')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('quote').innerHTML = `"${data.content}"<br><br>— ${data.author}`;
+                })
+                .catch(error => {
+                    console.error('Quote error:', error);
+                    document.getElementById('quote').textContent = '"The only way to do great work is to love what you do." — Steve Jobs';
+                });
+        }
+        loadQuote();
+        setInterval(loadQuote, 3600000); // New quote every hour
+
+        // Random Fact
+        function loadRandomFact() {
+            document.getElementById('random-fact').textContent = 'Loading...';
+            fetch('https://uselessfacts.jsph.pl/random.json?language=en')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('random-fact').textContent = data.text;
+                })
+                .catch(() => {
+                    document.getElementById('random-fact').textContent = 'Unable to load fact. Try again!';
+                });
+        }
+        loadRandomFact();
+
+        // Shooting Stars
+        function createShootingStars() {
+            const particlesContainer = document.getElementById('particles');
+            
+            setInterval(() => {
+                const star = document.createElement('div');
+                star.className = 'particle';
+                star.style.left = (Math.random() * 100) + '%';
+                star.style.top = (Math.random() * 50) + '%';
+                
+                const duration = Math.random() * 2 + 1;
+                star.style.animationDuration = duration + 's';
+                
+                particlesContainer.appendChild(star);
+                
+                star.addEventListener('animationend', () => {
+                    star.remove();
+                });
+                
+                setTimeout(() => {
+                    if (star.parentNode) {
+                        star.remove();
+                    }
+                }, (duration * 1000) + 200);
+                
+            }, 800);
+        }
+
+        // Create static twinkling stars
+        function createStaticStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Create nebula clouds
+        function createNebula() {
+            const nebulaContainer = document.getElementById('nebula');
+            const colors = [
+                'rgba(79, 172, 254, 0.3)',
+                'rgba(240, 147, 251, 0.3)',
+                'rgba(102, 126, 234, 0.3)',
+                'rgba(118, 75, 162, 0.3)'
+            ];
+            
+            for (let i = 0; i < 4; i++) {
+                const cloud = document.createElement('div');
+                cloud.className = 'nebula-cloud';
+                cloud.style.left = Math.random() * 100 + '%';
+                cloud.style.top = Math.random() * 100 + '%';
+                cloud.style.width = (Math.random() * 300 + 200) + 'px';
+                cloud.style.height = (Math.random() * 300 + 200) + 'px';
+                cloud.style.background = colors[i];
+                cloud.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                cloud.style.animationDelay = Math.random() * 5 + 's';
+                nebulaContainer.appendChild(cloud);
+            }
+        }
+
+        // Create aurora lights
+        function createAurora() {
+            const auroraContainer = document.getElementById('aurora');
+            const colors = [
+                { color: 'rgba(79, 172, 254, 0.3)', size: '600px' },
+                { color: 'rgba(240, 147, 251, 0.3)', size: '500px' },
+                { color: 'rgba(102, 126, 234, 0.3)', size: '700px' },
+                { color: 'rgba(118, 75, 162, 0.3)', size: '550px' }
+            ];
+            
+            colors.forEach((item, i) => {
+                const light = document.createElement('div');
+                light.className = 'aurora-light';
+                light.style.width = item.size;
+                light.style.height = item.size;
+                light.style.background = item.color;
+                light.style.left = (Math.random() * 80 + 10) + '%';
+                light.style.top = (Math.random() * 80 + 10) + '%';
+                light.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                light.style.animationDelay = (i * 3) + 's';
+                auroraContainer.appendChild(light);
+            });
+        }
+
+        // Create floating orbs
+        function createFloatingOrbs() {
+            const orbsContainer = document.getElementById('floating-orbs');
+            
+            setInterval(() => {
+                const orb = document.createElement('div');
+                orb.className = 'orb';
+                const size = Math.random() * 4 + 2;
+                orb.style.width = size + 'px';
+                orb.style.height = size + 'px';
+                orb.style.left = Math.random() * 100 + '%';
+                orb.style.animationDuration = (Math.random() * 10 + 15) + 's';
+                orbsContainer.appendChild(orb);
+                
+                setTimeout(() => orb.remove(), 25000);
+            }, 500);
+        }
+
+        // Achievements
+        let achievements = {
+            firstVisit: false,
+            clicked10Times: false,
+            stayed5Minutes: false
+        };
+
+        let clickCount = 0;
+
+        function showAchievement(title) {
+            const box = document.getElementById('achievement');
+            const text = document.getElementById('achievementText');
+            text.textContent = title;
+            
+            box.style.right = '20px';
+            setTimeout(() => {
+                box.style.right = '-400px';
+            }, 3000);
+        }
+
+        if (!localStorage.getItem('visited')) {
+            localStorage.setItem('visited', 'true');
+            setTimeout(() => showAchievement('Welcome! First visit!'), 1000);
+            achievements.firstVisit = true;
+        }
+
+        document.addEventListener('click', function() {
+            clickCount++;
+            if (clickCount === 10 && !achievements.clicked10Times) {
+                showAchievement('Click Master - 10 clicks!');
+                achievements.clicked10Times = true;
+            }
+        });
+
+        setTimeout(() => {
+            if (!achievements.stayed5Minutes) {
+                showAchievement('Dedication - 5 minutes on page!');
+                achievements.stayed5Minutes = true;
+            }
+        }, 300000);
+
+        // Start everything
+        createAurora();
+        createFloatingOrbs();
+        createNebula();
+        createStaticStars();
+        createShootingStars();
+        connectWebSocket();
+    </script>
+</body>
+</html>
